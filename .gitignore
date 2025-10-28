@@ -1,0 +1,27 @@
+# Terraform files
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+.terraform.lock.hcl
+
+# Docker files
+docker-compose.yml
+.dockerignore
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jenkins
+.jenkins/
+build/

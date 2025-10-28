@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flaskapp
+  labels:
+    app: flaskapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flaskapp
+  template:
+    metadata:
+      labels:
+        app: flaskapp
+    spec:
+      containers:
+        - name: flaskapp
+          image: IMAGE_PLACEHOLDER  # ← Jenkins will replace this
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ENV
+              value: "production"
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
