@@ -23,24 +23,26 @@ pipeline {
             }
         }
 
-        /* === STAGE 2: SONARQUBE SCAN === */
-        stage('SonarQube Code Analysis') {
-            steps {
-                echo '🔎 Running SonarQube static code analysis...'
-                script {
-                    withSonarQubeEnv("${SONARQUBE_ENV}") {
-                        sh '''
-                            cd ${APP_DIR}
-                            sonar-scanner \
-                                -Dsonar.projectKey=${PROJECT_NAME} \
-                                -Dsonar.sources=. \
-                                -Dsonar.host.url=$SONAR_HOST_URL \
-                                -Dsonar.login=$SONAR_AUTH_TOKEN
-                        '''
-                    }
-                }
+        /* === STAGE 2: SONARQUBE SCAN (Local CLI Version) === */
+stage('SonarQube Code Analysis') {
+    steps {
+        echo '🔎 Running SonarQube static code analysis...'
+        script {
+            withSonarQubeEnv("${SONARQUBE_ENV}") {
+                sh '''
+                    echo "🔍 Starting SonarQube analysis using local scanner..."
+                    cd ${APP_DIR}
+                    sonar-scanner \
+                        -Dsonar.projectKey=${PROJECT_NAME} \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=$SONAR_HOST_URL \
+                        -Dsonar.login=$SONAR_AUTH_TOKEN
+                '''
             }
         }
+    }
+}
+
 
         /* === STAGE 3: OWASP Dependency Check === */
         stage('OWASP Dependency Check') {
@@ -174,3 +176,4 @@ pipeline {
         }
     }
 }
+
