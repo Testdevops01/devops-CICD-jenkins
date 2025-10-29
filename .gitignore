@@ -25,3 +25,5 @@ Thumbs.db
 # Jenkins
 .jenkins/
 build/
+*.tfstate*
+.terraform/
