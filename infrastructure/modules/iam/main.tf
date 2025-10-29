@@ -1,6 +1,6 @@
 # EKS Cluster Role
 resource "aws_iam_role" "eks_cluster" {
-  name = "eks-cluster-role"
+  name = "DevOpsTask6ClusterRole"  # Valid name without hyphens
 
   assume_role_policy = jsonencode({
     Statement = [{
@@ -16,7 +16,7 @@ resource "aws_iam_role" "eks_cluster" {
 
 # EKS Node Group Role
 resource "aws_iam_role" "eks_node" {
-  name = "eks-node-role"
+  name = "DevOpsTask6NodeRole"  # Valid name without hyphens
 
   assume_role_policy = jsonencode({
     Statement = [{

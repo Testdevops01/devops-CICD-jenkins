@@ -67,17 +67,21 @@ module "ecr" {
 
 ###################################
 # EKS Cluster
-###################################
+#########################
 module "eks" {
-  source             = "./modules/eks"
-  vpc_id             = module.vpc.vpc_id
-  public_subnets     = module.public_subnet.subnet_ids
-  private_subnets    = module.private_subnet.subnet_ids
-  cluster_role_arn   = module.iam.eks_cluster_role_arn
-  node_role_arn      = module.iam.eks_node_role_arn
-  cluster_name       = var.cluster_name
-  desired_size       = var.desired_size
-  max_size           = var.max_size
-  min_size           = var.min_size
-  instance_type      = var.node_instance_type
+  source = "./modules/eks"
+
+  cluster_name      = "DevOpsTask6Cluster"
+  cluster_role_name = module.iam.eks_cluster_role_name  # Role name for policy attachments
+  cluster_role_arn  = module.iam.eks_cluster_role_arn   # Role ARN for EKS cluster
+  node_role_name    = module.iam.eks_node_role_name     # Role name for policy attachments
+  node_role_arn     = module.iam.eks_node_role_arn      # Role ARN for node group
+  vpc_id            = module.vpc.vpc_id                 # Add the missing VPC ID
+  public_subnets    = module.public_subnet.subnet_ids
+  private_subnets   = module.private_subnet.subnet_ids
+
+  desired_size   = 2
+  max_size       = 3
+  min_size       = 1
+  instance_type  = "t3.medium"
 }

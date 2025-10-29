@@ -48,3 +48,13 @@ variable "instance_type" {
   type        = string
   default     = "t3.micro"
 }
+# Add these two variables to your existing variables.tf
+variable "cluster_role_name" {
+  description = "Name of the EKS cluster IAM role"
+  type        = string
+}
+
+variable "node_role_name" {
+  description = "Name of the EKS node IAM role"
+  type        = string
+}
