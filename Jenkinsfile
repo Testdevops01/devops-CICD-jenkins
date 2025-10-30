@@ -5,7 +5,7 @@ pipeline {
         AWS_REGION = 'us-east-1'
         PROJECT_NAME = 'devops-CICD-jenkins'
         APP_NAME = 'flaskapp'
-        CLUSTER_NAME = 'eks-devops-cluster'
+        CLUSTER_NAME = 'DevOpsTask6Cluster'
         ECR_REPO_NAME = 'my-app'
         INFRA_DIR = 'infrastructure'
         APP_DIR = 'app'
