@@ -114,23 +114,28 @@ pipeline {
         }
 
         /* === STAGE 7: TRIVY IMAGE SCAN === */
-        stage('Trivy Image Scan') {
-            steps {
-                echo '🔍 Running Trivy vulnerability scan...'
-                script {
-                    sh '''
-                        AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-                        IMAGE_TAG=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${BUILD_NUMBER}
+stage('Trivy Image Scan') {
+    steps {
+        echo '🔍 Running Trivy vulnerability scan...'
+        script {
+            withCredentials([[
+                $class: 'AmazonWebServicesCredentialsBinding',
+                credentialsId: 'aws-creds'
+            ]]) {
+                sh '''
+                    AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+                    IMAGE_TAG=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${BUILD_NUMBER}
 
-                        echo "🔎 Scanning Docker image for HIGH and CRITICAL vulnerabilities..."
-                        trivy image --exit-code 0 --severity HIGH,CRITICAL ${IMAGE_TAG} > trivy-report.txt
+                    echo "🔎 Scanning Docker image for HIGH and CRITICAL vulnerabilities..."
+                    trivy image --exit-code 0 --severity HIGH,CRITICAL ${IMAGE_TAG} > trivy-report.txt
 
-                        echo "✅ Trivy scan completed. Report saved to trivy-report.txt"
-                        cat trivy-report.txt
-                    '''
-                }
+                    echo "✅ Trivy scan completed. Report saved to trivy-report.txt"
+                    cat trivy-report.txt
+                '''
             }
         }
+    }
+}
 
         /* === STAGE 8: DEPLOY TO EKS === */
         stage('Deploy to EKS') {
