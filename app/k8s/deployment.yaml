@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: flaskapp
-          image: IMAGE_PLACEHOLDER  # ← Jenkins will replace this
+          image: 843559766730.dkr.ecr.us-east-1.amazonaws.com/my-app:6  # ← Jenkins will replace this
           ports:
             - containerPort: 8080
           env:

@@ -60,10 +60,10 @@ module "iam" {
 ###################################
 # ECR Repository
 ###################################
-module "ecr" {
-  source          = "./modules/ecr"
-  repository_name = var.repository_name
-}
+#module "ecr" {
+#  source          = "./modules/ecr"
+#  repository_name = var.repository_name
+#}
 
 ###################################
 # EKS Cluster

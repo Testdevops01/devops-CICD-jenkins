@@ -17,19 +17,6 @@ output "private_subnet_ids" {
 }
 
 ########################################
-# ECR Outputs
-########################################
-output "ecr_repository_url" {
-  description = "ECR repository URL"
-  value       = module.ecr.repository_url
-}
-
-output "ecr_repository_name" {
-  description = "ECR repository name"
-  value       = module.ecr.repository_name
-}
-
-########################################
 # EKS Outputs
 ########################################
 output "eks_cluster_name" {
