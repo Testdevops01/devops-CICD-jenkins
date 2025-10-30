@@ -155,36 +155,39 @@ pipeline {
         }
 
         /* === STAGE 8: DEPLOY TO EKS === */
-        stage('Deploy to EKS') {
-            steps {
-                echo '🚀 Deploying application to Amazon EKS...'
-                withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'aws-creds'
-                ]]) {
-                    sh '''
-                        # Fix DNS for EKS endpoint
-                        echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
-                        echo "nameserver 8.8.4.4" | sudo tee -a /etc/resolv.conf
-                        
-                        # Update kubeconfig
-                        aws eks update-kubeconfig --region ${AWS_REGION} --name ${CLUSTER_NAME} --kubeconfig /var/lib/jenkins/.kube/config
-                        
-                        # Update deployment with current image
-                        AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-                        sed -i "s|IMAGE_PLACEHOLDER|${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${BUILD_NUMBER}|g" ${K8S_DIR}/deployment.yaml
-                        
-                        # Deploy to Kubernetes
-                        kubectl apply -f ${K8S_DIR}/deployment.yaml
-                        kubectl apply -f ${K8S_DIR}/service.yaml
-                        kubectl rollout status deployment/${APP_NAME} --timeout=600s
-                        
-                        echo "✅ Application deployed successfully to EKS!"
-                    '''
-                }
-            }
+stage('Deploy to EKS') {
+    steps {
+        echo '🚀 Deploying application to Amazon EKS...'
+        withCredentials([[
+            $class: 'AmazonWebServicesCredentialsBinding',
+            credentialsId: 'aws-creds'
+        ]]) {
+            sh '''
+                # Update kubeconfig (DNS is now fixed permanently)
+                aws eks update-kubeconfig --region ${AWS_REGION} --name ${CLUSTER_NAME} --kubeconfig /var/lib/jenkins/.kube/config
+                
+                # Test cluster access
+                echo "Testing EKS cluster connectivity..."
+                kubectl cluster-info
+                
+                # Update deployment with current image
+                AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+                sed -i "s|IMAGE_PLACEHOLDER|${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${BUILD_NUMBER}|g" ${K8S_DIR}/deployment.yaml
+                
+                # Deploy to Kubernetes
+                echo "Deploying application to EKS..."
+                kubectl apply -f ${K8S_DIR}/deployment.yaml
+                kubectl apply -f ${K8S_DIR}/service.yaml
+                kubectl rollout status deployment/${APP_NAME} --timeout=600s
+                
+                echo "✅ Application deployed successfully to EKS!"
+                
+                # Show final status
+                kubectl get deployments,services,pods
+            '''
         }
     }
+}
 
     post {
         always {
