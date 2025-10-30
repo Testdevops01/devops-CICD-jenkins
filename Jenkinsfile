@@ -137,12 +137,29 @@ stage('Trivy Image Scan') {
     }
 }
 
-        /* === STAGE 8: DEPLOY TO EKS === */
+        /* === STAGE 8: TERRAFORM APPLY === */
+        stage('Terraform Apply') {
+            steps {
+                echo '🚀 Applying Infrastructure Changes...'
+                dir("${INFRA_DIR}") {
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'aws-creds'
+                    ]]) {
+                        sh '''
+                            terraform apply -auto-approve tfplan
+                        '''
+                    }
+                }
+            }
+        }
+
+        /* === STAGE 9: DEPLOY TO EKS === */
         stage('Deploy to EKS') {
             steps {
                 echo '🚀 Deploying application to Amazon EKS...'
                 withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding', 
+                    $class: 'AmazonWebServicesCredentialsBinding',
                     credentialsId: 'aws-creds'
                 ]]) {
                     sh '''
@@ -151,23 +168,6 @@ stage('Trivy Image Scan') {
                         kubectl apply -f ${K8S_DIR}/service.yaml
                         kubectl rollout status deployment/${APP_NAME} -n default
                     '''
-                }
-            }
-        }
-
-        /* === STAGE 9: TERRAFORM APPLY === */
-        stage('Terraform Apply') {
-            steps {
-                echo '🚀 Applying Infrastructure Changes...'
-                dir("${INFRA_DIR}") {
-                    withCredentials([[
-                        $class: 'AmazonWebServicesCredentialsBinding', 
-                        credentialsId: 'aws-creds'
-                    ]]) {
-                        sh '''
-                            terraform apply -auto-approve tfplan
-                        '''
-                    }
                 }
             }
         }
