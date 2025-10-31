@@ -22,19 +22,19 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
+        /* === STAGE 2: SONARQUBE === */
+	stage('SonarQube Analysis') {
     steps {
         echo '🔎 Running SonarQube Code Analysis...'
         script {
             withSonarQubeEnv('sonarqube') {
                 sh '''
                     cd app
-                    /opt/sonar-scanner/bin/sonar-scanner \
+                    sonar-scanner \
                         -Dsonar.projectKey=devops-CICD-jenkins \
                         -Dsonar.sources=. \
                         -Dsonar.host.url=http://localhost:9000 \
-                        -Dsonar.login=admin \
-                        -Dsonar.password=admin \
+                        -Dsonar.token=${SONAR_AUTH_TOKEN} \
                         -Dsonar.scm.disabled=true
                 '''
             }
