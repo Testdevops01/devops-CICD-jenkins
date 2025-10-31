@@ -22,27 +22,25 @@ pipeline {
             }
         }
 
-        /* === STAGE 2: SONARQUBE CODE ANALYSIS === */
         stage('SonarQube Analysis') {
-            steps {
-                echo '🔎 Running SonarQube Code Analysis...'
-                script {
-                    withSonarQubeEnv("${SONARQUBE_ENV}") {
-                        sh '''
-                            echo "Starting SonarQube analysis..."
-                            cd ${APP_DIR}
-                            /opt/sonar-scanner/bin/sonar-scanner \
-                                -Dsonar.projectKey=${PROJECT_NAME} \
-                                -Dsonar.sources=. \
-                                -Dsonar.host.url=$SONAR_HOST_URL \
-                                -Dsonar.login=$SONAR_AUTH_TOKEN \
-                                -Dsonar.scm.disabled=true
-                            echo "✅ SonarQube analysis completed!"
-                        '''
-                    }
-                }
+    steps {
+        echo '🔎 Running SonarQube Code Analysis...'
+        script {
+            withSonarQubeEnv('sonarqube') {
+                sh '''
+                    cd app
+                    /opt/sonar-scanner/bin/sonar-scanner \
+                        -Dsonar.projectKey=devops-CICD-jenkins \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=http://localhost:9000 \
+                        -Dsonar.login=admin \
+                        -Dsonar.password=admin \
+                        -Dsonar.scm.disabled=true
+                '''
             }
         }
+    }
+}
 
         /* === STAGE 3: OWASP DEPENDENCY CHECK === */
         stage('OWASP Dependency Check') {
