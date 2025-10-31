@@ -30,7 +30,7 @@ pipeline {
             withSonarQubeEnv('sonarqube') {
                 sh '''
                     cd app
-                    sonar-scanner \
+                    /opt/sonar-scanner/bin/sonar-scanner \
                         -Dsonar.projectKey=devops-CICD-jenkins \
                         -Dsonar.sources=. \
                         -Dsonar.host.url=http://localhost:9000 \
