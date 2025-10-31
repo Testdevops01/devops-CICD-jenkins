@@ -23,24 +23,30 @@ pipeline {
         }
 
         /* === STAGE 2: SONARQUBE === */
-	stage('SonarQube Analysis') {
-    steps {
-        echo '🔎 Running SonarQube Code Analysis...'
-        script {
-            withSonarQubeEnv('sonarqube') {
-                sh '''
-                    cd app
-                    /opt/sonar-scanner/bin/sonar-scanner \
-                        -Dsonar.projectKey=devops-CICD-jenkins \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=http://localhost:9000 \
-                        -Dsonar.token=${SONAR_AUTH_TOKEN} \
-                        -Dsonar.scm.disabled=true
-                '''
+	
+        /* === STAGE 2: SONARQUBE === */
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    echo "🔎 Running SonarQube Code Analysis..."
+                    
+                    // If you need to check/create project first, do it inside withSonarQubeEnv
+                    withSonarQubeEnv('sonarqube') {
+                        sh '''
+                            cd app
+                            # The SonarQube authentication is now available via environment variables
+                            # that are automatically injected by withSonarQubeEnv
+                            echo "Running SonarQube analysis..."
+                            /opt/sonar-scanner/bin/sonar-scanner \
+                              -Dsonar.projectKey=devops-CICD-jenkins \
+                              -Dsonar.sources=. \
+                              -Dsonar.host.url=http://localhost:9000 \
+                              -Dsonar.scm.disabled=true
+                        '''
+                    }
+                }
             }
         }
-    }
-}
 
         /* === STAGE 3: OWASP DEPENDENCY CHECK === */
         stage('OWASP Dependency Check') {
